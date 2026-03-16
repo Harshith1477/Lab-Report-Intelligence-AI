@@ -26,14 +26,14 @@ export const translations = {
         te: "స్పష్టంగా & నమ్మకంగా",
     },
     heroSubtitle: {
-        en: "Upload your lab report PDF and get instant, AI-powered explanations for every test result. No medical jargon — just clear, calming insights you can act on.",
-        hi: "अपनी लैब रिपोर्ट PDF अपलोड करें और प्रत्येक परिणाम के लिए तुरंत AI-आधारित स्पष्टीकरण प्राप्त करें। कोई डॉक्टरी भाषा नहीं — बस स्पष्ट और शांत जानकारी।",
-        te: "మీ లాబ్ రిపోర్ట్ PDF అప్‌లోడ్ చేసి, ప్రతి పరీక్ష ఫలితానికి తక్షణ AI వివరణలు పొందండి. వైద్య పరిభాష లేదు — స్పష్టమైన, ప్రశాంతమైన సమాచారం.",
+        en: "Upload your lab report PDF or Image and get instant, AI-powered explanations for every test result. No medical jargon — just clear, calming insights you can act on.",
+        hi: "अपनी लैब रिपोर्ट PDF या Image अपलोड करें और प्रत्येक परिणाम के लिए तुरंत AI-आधारित स्पष्टीकरण प्राप्त करें। कोई डॉक्टरी भाषा नहीं — बस स्पष्ट और शांत जानकारी।",
+        te: "మీ లాబ్ రిపోర్ట్ PDF లేదా Image అప్‌లోడ్ చేసి, ప్రతి పరీక్ష ఫలితానికి తక్షణ AI వివరణలు పొందండి. వైద్య పరిభాష లేదు — స్పష్టమైన, ప్రశాంతమైన సమాచారం.",
     },
     uploadPdf: {
-        en: "Upload PDF",
-        hi: "PDF अपलोड करें",
-        te: "PDF అప్‌లోడ్ చేయండి",
+        en: "Upload PDF/Image",
+        hi: "PDF/Image अपलोड करें",
+        te: "PDF/Image అప్‌లోడ్ చేయండి",
     },
     tryDemo: {
         en: "Try Demo",

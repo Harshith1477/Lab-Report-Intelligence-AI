@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, Brain, BarChart3, Heart, ArrowRight, Loader2 } from "lucide-react";
 import { FeatureCard } from "@/components/lab/FeatureCard";
@@ -16,12 +16,30 @@ const LandingPage = () => {
     const { toast } = useToast();
     const { lang } = useLang();
 
+    // Check API key on mount
+    useEffect(() => {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!apiKey) {
+            console.error("[LandingPage] CRITICAL: VITE_GEMINI_API_KEY is not defined!");
+        } else {
+            console.log("[LandingPage] Gemini API Key found:", apiKey.substring(0, 6) + "...");
+        }
+    }, []);
+
+    const isAiReady = !!import.meta.env.VITE_GEMINI_API_KEY;
+
     const handleUpload = useCallback(
         async (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
             if (!file) return;
-            if (file.type !== "application/pdf") {
-                toast({ title: "Please upload a PDF file", variant: "destructive" });
+
+            const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+            if (!allowedTypes.includes(file.type)) {
+                toast({
+                    title: "Unsupported file type",
+                    description: "Please upload a PDF or an image (JPG, PNG, WEBP) of your report.",
+                    variant: "destructive"
+                });
                 return;
             }
 
@@ -42,23 +60,27 @@ const LandingPage = () => {
                     reader.readAsDataURL(file);
                 });
 
-                const metrics = await analyzeLabReportWithGemini(base64, file.name);
+                console.log("[LandingPage] Starting analysis for file:", file.name, "Type:", file.type, "Size:", file.size);
+                const metrics = await analyzeLabReportWithGemini(base64, file.name, file.type);
+                console.log("[LandingPage] Metrics received:", metrics);
 
                 if (metrics && Object.keys(metrics).length > 0) {
                     toast({ title: "Report analyzed successfully!" });
                     navigate("/results", { state: { metrics } });
                 } else {
                     toast({
-                        title: "Analysis incomplete",
-                        description: "No medical content or health metrics were found in this file. Please ensure you've uploaded a valid lab report.",
+                        title: "No data extracted",
+                        description: "The AI couldn't find any medical metrics. Please try a clearer scan or use our demo report.",
                         variant: "destructive"
                     });
                 }
             } catch (err: any) {
-                console.error("Upload error:", err);
+                console.error("[LandingPage] Analysis Error:", err);
+                const errorMessage = err instanceof Error ? err.message : String(err);
+
                 toast({
                     title: "Analysis failed",
-                    description: err.message || "Failed to analyze report",
+                    description: `Error: ${errorMessage}. Try again or use the demo report.`,
                     variant: "destructive",
                 });
             } finally {
@@ -68,6 +90,10 @@ const LandingPage = () => {
         },
         [navigate, toast]
     );
+
+    const handleTryDemo = () => {
+        navigate("/results");
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 via-white to-slate-50">
@@ -94,12 +120,30 @@ const LandingPage = () => {
                     </span>
                 </h1>
 
-                <p className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                <p className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto mb-6 leading-relaxed">
                     {t(lang, "heroSubtitle")}
                 </p>
 
+                {!isAiReady && (
+                    <div className="mb-8 p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium inline-flex items-center gap-2 animate-bounce">
+                        <ArrowRight className="h-4 w-4 rotate-180" /> API Key Missing. Please check your .env and restart the server.
+                    </div>
+                )}
+
+                {isAiReady && (
+                    <div className="mb-8 p-2 px-4 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-bold inline-flex items-center gap-2 mb-10">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> AI System Online
+                    </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={handleUpload} />
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="application/pdf,image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={handleUpload}
+                    />
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
@@ -110,6 +154,13 @@ const LandingPage = () => {
                         ) : (
                             <><Upload className="h-5 w-5" />{t(lang, "uploadPdf")}<ArrowRight className="h-4 w-4 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" /></>
                         )}
+                    </button>
+
+                    <button
+                        onClick={handleTryDemo}
+                        className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl border-2 border-slate-200 text-slate-600 font-semibold text-base hover:bg-slate-50 hover:border-slate-300 transition-all duration-300"
+                    >
+                        {t(lang, "tryDemo")}
                     </button>
                 </div>
             </section>

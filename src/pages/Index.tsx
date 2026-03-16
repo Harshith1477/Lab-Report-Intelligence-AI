@@ -7,6 +7,7 @@ import { type Language, t, getStoredLanguage, setStoredLanguage } from "@/lib/i1
 import type { HealthMetrics } from "@/lib/healthConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { analyzeLabReportWithGemini } from "@/lib/gemini";
 
 const Index = () => {
   const [lang, setLang] = useState<Language>(getStoredLanguage);
@@ -23,8 +24,9 @@ const Index = () => {
   const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.type !== "application/pdf") {
-      toast({ title: "Please upload a PDF file", variant: "destructive" });
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Please upload a PDF or image file", variant: "destructive" });
       return;
     }
     if (file.size > 20 * 1024 * 1024) {
@@ -44,13 +46,10 @@ const Index = () => {
         reader.readAsDataURL(file);
       });
 
-      const { data, error } = await supabase.functions.invoke("parse-lab-report", {
-        body: { pdfBase64: base64, fileName: file.name },
-      });
+      const metrics = await analyzeLabReportWithGemini(base64, file.name, file.type);
 
-      if (error) throw error;
-      if (data?.metrics) {
-        setMetrics({ ...data.metrics, updatedAt: new Date().toISOString() });
+      if (metrics) {
+        setMetrics({ ...metrics, updatedAt: new Date().toISOString() });
         toast({ title: "Report analyzed successfully!" });
       }
     } catch (err: any) {
@@ -75,7 +74,7 @@ const Index = () => {
         <input
           ref={fileInputRef}
           type="file"
-          accept="application/pdf"
+          accept="application/pdf,image/jpeg,image/png,image/webp"
           className="hidden"
           onChange={handleUpload}
         />

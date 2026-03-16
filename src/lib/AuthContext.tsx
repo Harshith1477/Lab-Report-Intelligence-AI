@@ -82,9 +82,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const s = data.session;
             setSession(s);
             if (s) {
-                // Try to enrich the User with profile data
-                const profile = await getProfile(s.user.id).catch(() => null);
-                setUser(deriveUser(s, profile?.full_name));
+                // Try to enrich the User with profile data; safely ignore any errors
+                let fullName: string | null = null;
+                try {
+                    const profile = await getProfile(s.user.id);
+                    fullName = profile?.full_name ?? null;
+                } catch (profileErr) {
+                    console.warn("[Auth] Could not fetch profile (table may not exist):", profileErr);
+                }
+                setUser(deriveUser(s, fullName));
             } else {
                 setUser(null);
             }
@@ -109,8 +115,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: listener } = supabase.auth.onAuthStateChange(async (_, s) => {
             setSession(s);
             if (s) {
-                const profile = await getProfile(s.user.id).catch(() => null);
-                setUser(deriveUser(s, profile?.full_name));
+                let fullName: string | null = null;
+                try {
+                    const profile = await getProfile(s.user.id);
+                    fullName = profile?.full_name ?? null;
+                } catch {
+                    // Silently ignore profile fetch errors (e.g., table not yet created)
+                }
+                setUser(deriveUser(s, fullName));
             } else {
                 setUser(null);
             }

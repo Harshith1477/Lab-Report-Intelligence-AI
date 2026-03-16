@@ -4,7 +4,7 @@ const translations = {
   en: {
     appTitle: "Health Dashboard",
     uploadTitle: "Upload Lab Report",
-    uploadSubtitle: "Upload your PDF lab report and we'll extract your health data",
+    uploadSubtitle: "Upload your PDF or Image lab report and we'll extract your health data",
     recentHealth: "Recent Health Status",
     lastUpdated: "Last updated",
     noData: "No data yet",
@@ -43,7 +43,7 @@ const translations = {
   hi: {
     appTitle: "स्वास्थ्य डैशबोर्ड",
     uploadTitle: "लैब रिपोर्ट अपलोड करें",
-    uploadSubtitle: "अपनी PDF लैब रिपोर्ट अपलोड करें और हम आपके स्वास्थ्य डेटा को निकालेंगे",
+    uploadSubtitle: "अपनी PDF या Image लैब रिपोर्ट अपलोड करें और हम आपके स्वास्थ्य डेटा को निकालेंगे",
     recentHealth: "हालिया स्वास्थ्य स्थिति",
     lastUpdated: "अंतिम अपडेट",
     noData: "अभी कोई डेटा नहीं",
@@ -78,7 +78,7 @@ const translations = {
   te: {
     appTitle: "ఆరోగ్య డ్యాష్‌బోర్డ్",
     uploadTitle: "ల్యాబ్ రిపోర్ట్ అప్‌లోడ్ చేయండి",
-    uploadSubtitle: "మీ PDF ల్యాబ్ రిపోర్ట్‌ను అప్‌లోడ్ చేయండి, మేము మీ ఆరోగ్య డేటాను తీస్తాము",
+    uploadSubtitle: "మీ PDF లేదా Image ల్యాబ్ రిపోర్ట్‌ను అప్‌లోడ్ చేయండి, మేము మీ ఆరోగ్య డేటాను తీస్తాము",
     recentHealth: "ఇటీవల ఆరోగ్య స్థితి",
     lastUpdated: "చివరిగా నవీకరించబడింది",
     noData: "ఇంకా డేటా లేదు",
